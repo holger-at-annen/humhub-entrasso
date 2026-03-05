@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:10.5
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?strong-root-password}
+      MYSQL_DATABASE: 'humhub'
+      MYSQL_USER: 'humhub'
+      MYSQL_PASSWORD: ${HUMHUB_DB_PASSWORD:?strong-db-password}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:6-alpine
+    restart: always
+    expose:
+      - '6379'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+
+  humhub:
+    image: mriedmann/humhub:latest
+    restart: always
+    ports:
+     - "${HUMHUB_HTTP_PORT:-8080}:80"
+
+    depends_on:
+      - db
+      - redis
+
+    environment:
+      # Database Settings
+      HUMHUB_DB_USER: 'humhub'
+      HUMHUB_DB_PASSWORD: ${HUMHUB_DB_PASSWORD:?strong-db-password}
+      HUMHUB_DB_HOST: 'db'
+      HUMHUB_DB_NAME: 'humhub'
+      HUMHUB_AUTO_INSTALL: 1
+
+      # URL Settings
+      HUMHUB_PROTO: '${HUMHUB_PROTO:-https}'
+      HUMHUB_HOST: '${HUMHUB_HOST:-intranet.example.com}'
+
+      # Redis Config for performance
+      HUMHUB_CACHE_EXPIRE_TIME: 3600
+      HUMHUB_CACHE_CLASS: yii\redis\Cache
+      HUMHUB_QUEUE_CLASS: humhub\modules\queue\driver\Redis
+      HUMHUB_REDIS_HOSTNAME: redis
+      HUMHUB_REDIS_PORT: 6379
+
+      # SMTP Settings (Required for notifications)
+      HUMHUB_MAILER_SYSTEM_EMAIL_ADDRESS: ${SMTP_FROM_ADDRESS:-noreply@example.com}
+      HUMHUB_MAILER_SYSTEM_EMAIL_NAME: ${SMTP_NAME:-Intranet}
+      HUMHUB_MAILER_TRANSPORT_TYPE: 'smtp'
+      HUMHUB_MAILER_HOSTNAME: ${SMTP_HOSTNAME}
+      HUMHUB_MAILER_PORT: ${SMTP_PORT:-587}
+      HUMHUB_MAILER_USERNAME: ${SMTP_USERNAME}
+      HUMHUB_MAILER_PASSWORD: ${SMTP_PASSWORD}
+      HUMHUB_MAILER_ENCRYPTION: ${SMTP_ENCRYPTION:-tls}
+
+      # --- CUSTOM ENTRASSO PLUGIN VARIABLES ---
+      ENTRASSO_TENANT_ID: ${ENTRASSO_TENANT_ID}
+      ENTRASSO_CLIENT_ID: ${ENTRASSO_CLIENT_ID}
+      ENTRASSO_CLIENT_SECRET: ${ENTRASSO_CLIENT_SECRET}
+
+    volumes:
+      # HumHub Persistence
+      - config_data:/var/www/localhost/htdocs/protected/config
+      - uploads_data:/var/www/localhost/htdocs/uploads
+      - modules_data:/var/www/localhost/htdocs/protected/modules
+      # Coolify Git-mount for the custom EntraSSO module
+      - ./:/var/www/localhost/htdocs/protected/modules/entrasso
+
+volumes:
+  db_data:
+  config_data:
+  uploads_data:
+  modules_data:
