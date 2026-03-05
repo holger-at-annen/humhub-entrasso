@@ -76,7 +76,7 @@ services:
       - uploads_data:/var/www/localhost/htdocs/uploads
       - modules_data:/var/www/localhost/htdocs/protected/modules
       # Coolify Git-mount for the custom EntraSSO module
-      - ./:/var/www/localhost/htdocs/protected/modules/entrasso
+      - ./humhub-entrasso:/var/www/localhost/htdocs/protected/modules/entrasso
 
 volumes:
   db_data:
