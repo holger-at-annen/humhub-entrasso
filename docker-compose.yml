@@ -29,7 +29,6 @@ services:
     image: mriedmann/humhub:latest
     restart: always
     ports:
-     - '${POSTGRES_PORT}:5432'
      - '${HUMHUB_HTTP_PORT}:80'
 
     depends_on:
@@ -47,6 +46,7 @@ services:
       # URL Settings
       HUMHUB_PROTO: '${HUMHUB_PROTO:-https}'
       HUMHUB_HOST: ${HUMHUB_HOST}
+      HUMHUB_HTTP_PORT: '${HUMHUB_HTTP_PORT:-8080}:80'
 
       # Redis Config for performance
       HUMHUB_CACHE_EXPIRE_TIME: 3600
