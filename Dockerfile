@@ -1,5 +1,5 @@
 # Start from the same base as the official image
-FROM mriedmann/humhub:latest
+FROM mriedmann/humhub:stable
 
 # Install git reliably (update index first!)
 RUN apk update --no-cache && \
