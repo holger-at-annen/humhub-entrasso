@@ -45,7 +45,7 @@ services:
 
       # URL Settings
       HUMHUB_PROTO: '${HUMHUB_PROTO:-https}'
-      HUMHUB_HOST: '${SERVICE_FQDN_APP}'
+      HUMHUB_HOST: '${HUMHUB_HOST:-$SERVICE_FQDN_APP}'
 
       # Redis Config for performance
       HUMHUB_CACHE_EXPIRE_TIME: 3600
