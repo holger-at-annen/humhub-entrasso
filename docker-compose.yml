@@ -71,6 +71,9 @@ services:
       ENTRASSO_CLIENT_SECRET: ${ENTRASSO_CLIENT_SECRET}
 
     volumes:
+      - config_data:/var/www/localhost/htdocs/protected/config
+      - uploads_data:/var/www/localhost/htdocs/uploads
+      - modules_data:/var/www/localhost/htdocs/protected/modules
       - ./humhub-entrasso:/var/www/localhost/htdocs/protected/modules/entrasso
 
 volumes:
