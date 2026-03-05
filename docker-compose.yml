@@ -5,10 +5,10 @@ services:
     image: mariadb:10.5
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?strong-root-password}
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:?strongrootpassword}
       MYSQL_DATABASE: 'humhub'
       MYSQL_USER: 'humhub'
-      MYSQL_PASSWORD: ${HUMHUB_DB_PASSWORD:?strong-db-password}
+      MYSQL_PASSWORD: ${HUMHUB_DB_PASSWORD:?strongdbpassword}
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -38,14 +38,14 @@ services:
     environment:
       # Database Settings
       HUMHUB_DB_USER: 'humhub'
-      HUMHUB_DB_PASSWORD: ${HUMHUB_DB_PASSWORD:?strong-db-password}
+      HUMHUB_DB_PASSWORD: ${HUMHUB_DB_PASSWORD:?strongdbpassword}
       HUMHUB_DB_HOST: 'db'
       HUMHUB_DB_NAME: 'humhub'
       HUMHUB_AUTO_INSTALL: 1
 
       # URL Settings
       HUMHUB_PROTO: '${HUMHUB_PROTO:-https}'
-      HUMHUB_HOST: '${HUMHUB_HOST:-intranet.example.com}'
+      HUMHUB_HOST: ${SERVICE_FQDN_APP}
 
       # Redis Config for performance
       HUMHUB_CACHE_EXPIRE_TIME: 3600
